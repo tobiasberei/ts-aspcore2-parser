@@ -1,0 +1,2 @@
+grammar AspCore2InputLanguageFormat;
+
