@@ -13,7 +13,8 @@
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "antlr4ts": "antlr4ts -visitor ./src/grammar/AspCore2ILFGrammar.g4 -o ./src/grammar/parser"
   },
   "repository": {
     "type": "git",
