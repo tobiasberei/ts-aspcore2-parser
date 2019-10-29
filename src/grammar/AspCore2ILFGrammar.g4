@@ -88,5 +88,204 @@ aspCore2ILFGrammar
     ;
 
 program
-    : 
+    : statements? query? EOF
     ;
+
+statements
+    : statement statements?
+    ;
+
+query
+    : classicalLiteral QUERY_MARK
+    ;
+
+statement
+    : annotation
+    | comment
+    | CONS body? DOT // integrity constraint
+    | head (CONS body?)? DOT // rule/fact
+    | WCONS body? DOT SQUARE_OPEN weightAtLevel SQUARE_CLOSE
+    | optimize DOT
+    ;
+
+comment
+    : MULTI_LINE_COMMENT
+    | COMMENT
+    ;
+
+head
+    : disjunction
+    | choice
+    ;
+
+body
+    :   (
+            nafLiteral 
+            | (nafAggregate | aggregate)
+        )
+        (COMMA body)?
+    ;
+
+disjunction
+    : classicalLiteral (OR disjunction)?
+    ;
+
+choice
+    : (term binop) ? CURLY_OPEN choiceElements? CURLY_CLOSE (binop term)?
+    ;
+
+choiceElements
+    : choiceElement (SEMICOLON choiceElements)?
+    ;
+
+choiceElement
+    : atom (COLON nafLiterals?)?
+    ;
+
+nafAggregate
+    : NAF? (term negativeBinop)? aggregateDefinition (negativeBinop term)?
+    ;
+
+aggregate
+    : (term EQUAL)? aggregateDefinition (EQUAL term)?
+    ;
+
+aggregateDefinition
+    : aggregateFunction CURLY_OPEN aggregateElements CURLY_CLOSE
+    ;
+
+aggregateElements
+    : aggregateElement (SEMICOLON aggregateElements)?
+    ;
+
+aggregateElement
+    : basicTerms? (COLON nafLiterals?)?
+    ;
+
+aggregateFunction
+    : AGGREGATE_COUNT
+    | AGGREGATE_MAX
+    | AGGREGATE_MIN
+    | AGGREGATE_SUM
+    ;
+
+optimize
+    : optimizeFunction CURLY_OPEN optimizeElements? CURLY_CLOSE
+    ;
+
+optimizeElements
+    : optimizeElement (SEMICOLON optimizeElements)?
+    ;
+
+optimizeElement
+    : weightAtLevel (COLON nafLiterals?)?
+    ;
+
+optimizeFunction
+    : MAXIMIZE
+    | MINIMIZE
+    ;
+
+weightAtLevel
+    : weakTerm  (AT weakTerm)? (COMMA weakTerms)?
+    ;
+
+nafLiterals
+    : nafLiteral (COMMA nafLiterals)?
+    ;
+
+nafLiteral
+    : nafClassicalLiteral
+    | classicalLiteral
+    |   (NAF? negativeBuiltinAtom | builtinAtom)
+    ;
+
+nafClassicalLiteral
+    : NAF classicalLiteral
+    ;
+
+classicalLiteral
+    : MINUS? atom
+    ;
+
+atom
+    : atomName (PAREN_OPEN terms? PAREN_CLOSE)
+    ;
+
+negativeBuiltinAtom
+    : term negativeBinop term
+    ;
+
+builtinAtom
+    : term EQUAL term
+    ;
+
+negativeBinop
+    : UNEQUAL
+    | LESS
+    | GREATER
+    | LESS_OR_EQ
+    | GREATER_OR_EQ
+    ;
+
+binop
+    : EQUAL
+    | UNEQUAL
+    | LESS
+    | GREATER
+    | LESS_OR_EQ
+    | GREATER_OR_EQ
+    ;
+
+terms
+    : term COMMA terms
+    ;
+
+term
+    : (atomName PAREN_OPEN terms? PAREN_CLOSE)
+    | basicTerm
+    | (PAREN_OPEN term PAREN_CLOSE)
+    | (MINUS term)
+    ;
+
+groundTerm
+    : ID
+    | NUMBER
+    | STRING
+    ;
+
+variableTerm
+    : VARIABLE
+    | ANONYMOUS_VARIABLE
+    ;
+
+basicTerms
+    : basicTerm (COMMA basicTerms)?
+    ;
+
+basicTerm
+    : groundTerm
+    | variableTerm
+    ;
+
+weakTerms
+    : weakTerm (COMMA weakTerms)?
+    ;
+
+weakTerm
+    : term
+    | basicTerm
+    ;
+
+arithop
+    : PLUS
+    | MINUS
+    | TIMES
+    | DIV
+    ;
+
+atomName
+    : ID
+    ;
+
+
