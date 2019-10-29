@@ -289,3 +289,160 @@ atomName
     ;
 
 
+
+
+/* ANNOTATION GRAMMAR */
+annotation
+    : ANNOTATION_START annotationList ANNOTATION_END
+    ;
+
+annotationList
+    : annotationExpression annotationList?
+    ;
+
+annotationExpression
+    : ruleDefinition
+    | blockDefinition
+    | testDefinition
+    | programDefinition
+    ;
+
+ruleDefinition
+    : AT RULE PAREN_OPEN NAME EQUAL STRING (COMMA BLOCK EQUAL STRING)? PAREN_CLOSE
+    ;
+
+blockDefinition
+    : AT BLOCK PAREN_OPEN NAME EQUAL STRING (COMMA RULES EQUAL CURLY_OPEN ruleReferenceList CURLY_CLOSE)? PAREN_CLOSE
+    ;
+
+testDefinition
+    : AT TEST PAREN_OPEN NAME EQUAL STRING COMMA SCOPE EQUAL CURLY_OPEN referenceList CURLY_CLOSE COMMA 
+        (PROGRAM_FILES EQUAL CURLY_OPEN programFilesList CURLY_CLOSE COMMA)?
+        (INPUT EQUAL STRING COMMA)?
+        (INPUT_FILES EQUAL CURLY_OPEN inputFilesList CURLY_CLOSE COMMA)?
+        ASSERT EQUAL CURLY_OPEN assertionList CURLY_CLOSE PAREN_CLOSE
+    ;
+
+programDefinition
+    : AT PROGRAM PAREN_OPEN NAME EQUAL STRING (COMMA ADD_FILES EQUAL STRING)? PAREN_CLOSE
+    ;
+
+ruleReferenceList
+    : ruleReference (COMMA ruleReferenceList)?
+    ;
+
+ruleReference
+    : STRING
+    ;
+
+programFilesList
+    : programFile (COMMA programFilesList)?
+    ;
+
+programFile
+    : STRING
+    ;
+
+inputFilesList
+    : inputFile (COMMA inputFilesList)?
+    ;
+
+inputFile
+    : STRING
+    ;
+
+referenceList
+    : reference (COMMA referenceList)?
+    ;
+
+reference
+    : STRING
+    ;
+
+assertionList
+    : assertion (COMMA assertionList)?
+    ;
+
+assertion
+    : AT assertType
+    ;
+
+assertType
+    : assertNoAnswerSet
+    | assertTrueInAll
+    | assertTrueInAtLeast
+    | assertTrueInAtMost
+    | assertTrueInExactly
+    | assertFalseInAll
+    | assertFalsInAtLeast
+    | assertFalseInAtMost
+    | assertFalseInExactly
+    | assertConstraint
+    | assertConstraintInExactly
+    | assertConstraintInAtLeast
+    | assertConstraintInAtMost
+    | assertBestModelCost
+    ;
+
+
+assertNoAnswerSet
+    : ASSERT_NAS
+    ;
+
+assertTrueInAll
+    : ASSERT_TIA PAREN_OPEN ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertTrueInAtLeast
+    : ASSERT_TIAL PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertTrueInAtMost
+    : ASSERT_TIAM PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertTrueInExactly
+    : ASSERT_TIE PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertFalseInAll
+    : ASSERT_FIA PAREN_OPEN ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertFalsInAtLeast
+    : ASSERT_FIAL PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertFalseInAtMost
+    : ASSERT_FIAM PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertFalseInExactly
+    : ASSERT_FIE PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
+    ;
+
+assertConstraint
+    : ASSERT_C PAREN_OPEN CONSTRAINT EQUAL STRING PAREN_CLOSE
+    ;
+
+assertConstraintInExactly
+    : ASSERT_CIE PAREN_OPEN NUM_STR EQUAL NUMBER COMMA CONSTRAINT EQUAL STRING PAREN_CLOSE
+    ;
+
+
+assertConstraintInAtLeast
+    : ASSERT_CIAL PAREN_OPEN NUM_STR EQUAL NUMBER COMMA CONSTRAINT EQUAL STRING PAREN_CLOSE
+    ;
+
+assertConstraintInAtMost
+    : ASSERT_CIAM PAREN_OPEN NUM_STR EQUAL NUMBER COMMA CONSTRAINT EQUAL STRING PAREN_CLOSE
+    ;
+
+assertBestModelCost
+    : ASSERT_BMC PAREN_OPEN COST EQUAL NUMBER COMMA LEVEL EQUAL NUMBER PAREN_CLOSE
+    ;
+
+
+
+
+
