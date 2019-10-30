@@ -9,11 +9,11 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags",
+    "prepare": "npm run build", // before the pakcage is packed and published
+    "prepublishOnly": "npm test && npm run lint", // before prepare and only on 'npm publish'
+    "preversion": "npm run lint", // will run before creating a new package version
+    "version": "npm run format && git add -A src", // will run after a new version has been created
+    "postversion": "git push && git push --tags", // will run after the commit has been made
     "antlr4ts": "antlr4ts -visitor ./src/grammar/AspCore2ILFGrammar.g4 -o ./src/grammar/parser"
   },
   "repository": {
