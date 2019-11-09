@@ -6,14 +6,13 @@ import { AspCore2ILFGrammarLexer } from './parser/AspCore2ILFGrammarLexer';
 import { AspCore2ILFGrammarParser } from './parser/AspCore2ILFGrammarParser';
 
 export class AspCore2ILFParser {
-  
   private _aspCore2ErrorConverter: AspCore2ILFParserConversionErrorListener;
-  
-  private _errorListeners : IAspCore2ILFParserErrorListener[] = [];
-  public get errorListeners() : IAspCore2ILFParserErrorListener[] {
+
+  private _errorListeners: IAspCore2ILFParserErrorListener[] = [];
+  public get errorListeners(): IAspCore2ILFParserErrorListener[] {
     return this._errorListeners;
   }
-  
+
   constructor() {
     this._aspCore2ErrorConverter = new AspCore2ILFParserConversionErrorListener(this, this._handleError);
   }
@@ -26,20 +25,20 @@ export class AspCore2ILFParser {
 
     parser.removeErrorListeners();
     parser.addErrorListener(this._aspCore2ErrorConverter);
-    const tree = parser.aspCore2ILFGrammar();   
+    const tree = parser.aspCore2ILFGrammar();
   }
 
-  public addErrorListener(errorListener: IAspCore2ILFParserErrorListener){
+  public addErrorListener(errorListener: IAspCore2ILFParserErrorListener) {
     this.errorListeners.push(errorListener);
   }
 
-  public removeErrorListeners(){
+  public removeErrorListeners() {
     this._errorListeners = [];
   }
 
   protected _handleError(context: any, error: IAspCore2ILFParserError): void {
-      for(const errListener of context.errorListeners){
-        errListener.handleError(error);
-      }
+    for (const errListener of context.errorListeners) {
+      errListener.handleError(error);
+    }
   }
 }
