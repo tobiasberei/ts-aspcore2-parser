@@ -1,6 +1,6 @@
 grammar AspCore2ILFGrammar;
 
-WS : ( ' ' | '\t' | '\r' | '\n') -> skip;
+WS : [ \t\r\n] -> skip;
 
 DIGIT : [0-9];
 ANNOTATION_START : '%**';
@@ -100,8 +100,7 @@ query
     ;
 
 statement
-    : annotation
-    | comment
+    : comment // added comment (not present in ASPCore2)
     | CONS body? DOT // integrity constraint
     | head (CONS body?)? DOT // rule/fact
     | WCONS body? DOT SQUARE_OPEN weightAtLevel SQUARE_CLOSE
@@ -119,12 +118,7 @@ head
     ;
 
 body
-    :   (
-            nafLiteral 
-            | (nafAggregate | aggregate)
-        )
-        (COMMA body)?
-    ;
+    :  (nafLiteral | NAF? aggregate) (COMMA body)?;
 
 disjunction
     : classicalLiteral (OR disjunction)?
@@ -139,15 +133,11 @@ choiceElements
     ;
 
 choiceElement
-    : atom (COLON nafLiterals?)?
-    ;
-
-nafAggregate
-    : NAF? (term negativeBinop)? aggregateDefinition (negativeBinop term)?
+    : classicalLiteral (COLON nafLiterals?)?
     ;
 
 aggregate
-    : (term EQUAL)? aggregateDefinition (EQUAL term)?
+    : (term binop)? aggregateDefinition (binop term)?
     ;
 
 aggregateDefinition
@@ -159,7 +149,7 @@ aggregateElements
     ;
 
 aggregateElement
-    : basicTerms? (COLON nafLiterals?)?
+    : terms? (COLON nafLiterals?)?
     ;
 
 aggregateFunction
@@ -187,7 +177,7 @@ optimizeFunction
     ;
 
 weightAtLevel
-    : weakTerm  (AT weakTerm)? (COMMA weakTerms)?
+    : term  (AT term)? (COMMA terms)?
     ;
 
 nafLiterals
@@ -195,37 +185,16 @@ nafLiterals
     ;
 
 nafLiteral
-    : nafClassicalLiteral
-    | classicalLiteral
-    |   (NAF? negativeBuiltinAtom | builtinAtom)
-    ;
-
-nafClassicalLiteral
-    : NAF classicalLiteral
+    : 
+    NAF? (classicalLiteral | builtinAtom)
     ;
 
 classicalLiteral
-    : MINUS? atom
-    ;
-
-atom
-    : atomName (PAREN_OPEN terms? PAREN_CLOSE)
-    ;
-
-negativeBuiltinAtom
-    : term negativeBinop term
+    : MINUS? ID (PAREN_OPEN terms? PAREN_CLOSE)?
     ;
 
 builtinAtom
-    : term EQUAL term
-    ;
-
-negativeBinop
-    : UNEQUAL
-    | LESS
-    | GREATER
-    | LESS_OR_EQ
-    | GREATER_OR_EQ
+    : term binop term
     ;
 
 binop
@@ -238,43 +207,18 @@ binop
     ;
 
 terms
-    : term COMMA terms
+    : term (COMMA terms)?
     ;
 
 term
-    : (atomName PAREN_OPEN terms? PAREN_CLOSE)
-    | basicTerm
-    | (PAREN_OPEN term PAREN_CLOSE)
-    | (MINUS term)
-    ;
-
-groundTerm
-    : ID
+    : (ID (PAREN_OPEN terms? PAREN_CLOSE)?)
     | NUMBER
     | STRING
-    ;
-
-variableTerm
-    : VARIABLE
+    | VARIABLE
     | ANONYMOUS_VARIABLE
-    ;
-
-basicTerms
-    : basicTerm (COMMA basicTerms)?
-    ;
-
-basicTerm
-    : groundTerm
-    | variableTerm
-    ;
-
-weakTerms
-    : weakTerm (COMMA weakTerms)?
-    ;
-
-weakTerm
-    : term
-    | basicTerm
+    | PAREN_OPEN term PAREN_CLOSE
+    | MINUS term
+    | term arithop term
     ;
 
 arithop
@@ -283,166 +227,3 @@ arithop
     | TIMES
     | DIV
     ;
-
-atomName
-    : ID
-    ;
-
-
-
-
-/* ANNOTATION GRAMMAR */
-annotation
-    : ANNOTATION_START annotationList ANNOTATION_END
-    ;
-
-annotationList
-    : annotationExpression annotationList?
-    ;
-
-annotationExpression
-    : ruleDefinition
-    | blockDefinition
-    | testDefinition
-    | programDefinition
-    ;
-
-ruleDefinition
-    : AT RULE PAREN_OPEN NAME EQUAL STRING (COMMA BLOCK EQUAL STRING)? PAREN_CLOSE
-    ;
-
-blockDefinition
-    : AT BLOCK PAREN_OPEN NAME EQUAL STRING (COMMA RULES EQUAL CURLY_OPEN ruleReferenceList CURLY_CLOSE)? PAREN_CLOSE
-    ;
-
-testDefinition
-    : AT TEST PAREN_OPEN NAME EQUAL STRING COMMA SCOPE EQUAL CURLY_OPEN referenceList CURLY_CLOSE COMMA 
-        (PROGRAM_FILES EQUAL CURLY_OPEN programFilesList CURLY_CLOSE COMMA)?
-        (INPUT EQUAL STRING COMMA)?
-        (INPUT_FILES EQUAL CURLY_OPEN inputFilesList CURLY_CLOSE COMMA)?
-        ASSERT EQUAL CURLY_OPEN assertionList CURLY_CLOSE PAREN_CLOSE
-    ;
-
-programDefinition
-    : AT PROGRAM PAREN_OPEN NAME EQUAL STRING (COMMA ADD_FILES EQUAL STRING)? PAREN_CLOSE
-    ;
-
-ruleReferenceList
-    : ruleReference (COMMA ruleReferenceList)?
-    ;
-
-ruleReference
-    : STRING
-    ;
-
-programFilesList
-    : programFile (COMMA programFilesList)?
-    ;
-
-programFile
-    : STRING
-    ;
-
-inputFilesList
-    : inputFile (COMMA inputFilesList)?
-    ;
-
-inputFile
-    : STRING
-    ;
-
-referenceList
-    : reference (COMMA referenceList)?
-    ;
-
-reference
-    : STRING
-    ;
-
-assertionList
-    : assertion (COMMA assertionList)?
-    ;
-
-assertion
-    : AT assertType
-    ;
-
-assertType
-    : assertNoAnswerSet
-    | assertTrueInAll
-    | assertTrueInAtLeast
-    | assertTrueInAtMost
-    | assertTrueInExactly
-    | assertFalseInAll
-    | assertFalsInAtLeast
-    | assertFalseInAtMost
-    | assertFalseInExactly
-    | assertConstraint
-    | assertConstraintInExactly
-    | assertConstraintInAtLeast
-    | assertConstraintInAtMost
-    | assertBestModelCost
-    ;
-
-
-assertNoAnswerSet
-    : ASSERT_NAS
-    ;
-
-assertTrueInAll
-    : ASSERT_TIA PAREN_OPEN ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertTrueInAtLeast
-    : ASSERT_TIAL PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertTrueInAtMost
-    : ASSERT_TIAM PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertTrueInExactly
-    : ASSERT_TIE PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertFalseInAll
-    : ASSERT_FIA PAREN_OPEN ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertFalsInAtLeast
-    : ASSERT_FIAL PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertFalseInAtMost
-    : ASSERT_FIAM PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertFalseInExactly
-    : ASSERT_FIE PAREN_OPEN NUM_STR EQUAL NUMBER COMMA ATOMS EQUAL STRING PAREN_CLOSE
-    ;
-
-assertConstraint
-    : ASSERT_C PAREN_OPEN CONSTRAINT EQUAL STRING PAREN_CLOSE
-    ;
-
-assertConstraintInExactly
-    : ASSERT_CIE PAREN_OPEN NUM_STR EQUAL NUMBER COMMA CONSTRAINT EQUAL STRING PAREN_CLOSE
-    ;
-
-
-assertConstraintInAtLeast
-    : ASSERT_CIAL PAREN_OPEN NUM_STR EQUAL NUMBER COMMA CONSTRAINT EQUAL STRING PAREN_CLOSE
-    ;
-
-assertConstraintInAtMost
-    : ASSERT_CIAM PAREN_OPEN NUM_STR EQUAL NUMBER COMMA CONSTRAINT EQUAL STRING PAREN_CLOSE
-    ;
-
-assertBestModelCost
-    : ASSERT_BMC PAREN_OPEN COST EQUAL NUMBER COMMA LEVEL EQUAL NUMBER PAREN_CLOSE
-    ;
-
-
-
-
-
