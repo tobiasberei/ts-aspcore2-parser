@@ -24,7 +24,7 @@ function exec() {
     % All vertexes must be in the path.
     :- vtx(X), not reached(X).
     % A Target Node of the path cannot be the start node.
-    :- start(X), inPath(_, X).
+    :- start(X), inPath(_, X)
     % Each vertex in the path must have
     % at most one incoming and one outgoing edge.
     :- vtx(X), #count{Y : inPath(X, Y)} > 1.

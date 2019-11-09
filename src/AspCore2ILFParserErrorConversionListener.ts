@@ -12,7 +12,7 @@ export class AspCore2ILFParserConversionErrorListener implements ANTLRErrorListe
     }
 
     /**
-     * {@inheritDoc }
+     * {@inheritdoc}
      */
     public syntaxError(recognizer: any, offendingSymbol: any, line: any, charPositionInLine: any, msg: any, e: any) {
         this._errorHandler(this._errorHandlerContext, {
@@ -22,6 +22,5 @@ export class AspCore2ILFParserConversionErrorListener implements ANTLRErrorListe
             msg,
             offendingSymbol
         } as IAspCore2ILFParserError);
-        
     }
 }

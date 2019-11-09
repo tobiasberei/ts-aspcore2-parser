@@ -49,6 +49,7 @@
     "antlr4ts": "^0.5.0-alpha.3"
   },
   "files": [
-    "lib/**/*"
+    "lib/*",
+    "lib/parser/*"
   ]
 }

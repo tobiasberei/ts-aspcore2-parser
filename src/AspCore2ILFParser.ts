@@ -9,8 +9,8 @@ export class AspCore2ILFParser {
   
   private _aspCore2ErrorConverter: AspCore2ILFParserConversionErrorListener;
   
-  private _errorListeners : Array<((error: IAspCore2ILFParserError) => void)> = [];
-  public get errorListeners() : Array<((error: IAspCore2ILFParserError) => void)> {
+  private _errorListeners : IAspCore2ILFParserErrorListener[] = [];
+  public get errorListeners() : IAspCore2ILFParserErrorListener[] {
     return this._errorListeners;
   }
   
@@ -30,7 +30,7 @@ export class AspCore2ILFParser {
   }
 
   public addErrorListener(errorListener: IAspCore2ILFParserErrorListener){
-    this.errorListeners.push(errorListener.handleError);
+    this.errorListeners.push(errorListener);
   }
 
   public removeErrorListeners(){
@@ -39,7 +39,7 @@ export class AspCore2ILFParser {
 
   protected _handleError(context: any, error: IAspCore2ILFParserError): void {
       for(const errListener of context.errorListeners){
-        errListener(error);
+        errListener.handleError(error);
       }
   }
 }
