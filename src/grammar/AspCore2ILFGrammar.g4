@@ -1,8 +1,8 @@
 grammar AspCore2ILFGrammar;
 
-WS : [ \t\r\n] -> skip;
+WS : (' ' | '\t' | '\r' | '\n') -> skip;
 
-DIGIT : [0-9];
+fragment DIGIT : ('0'..'9');
 ANNOTATION_START : '%**';
 ANNOTATION_END : '**%';
 RULE : 'rule';
@@ -37,13 +37,13 @@ ASSERT_CIAL : 'constraintInAtLeast';
 ASSERT_CIAM : 'constraintInAtMost';
 ASSERT_BMC : 'bestModelCost';
 
-UPPERLETTER : [A-Z];
-LOWERLETTER: [a-z];
+fragment UPPERLETTER : ('A'..'Z');
+fragment LOWERLETTER: ('a'..'z');
 NAF: 'not';
 ID: LOWERLETTER (UPPERLETTER | LOWERLETTER | NUMBER | '_')*;
 VARIABLE: UPPERLETTER (UPPERLETTER | LOWERLETTER | NUMBER | '_')*;
 STRING: '\''  ~('\n' | '\r' | '\'')*  '\'';
-NUMBER: (DIGIT)+ ;
+NUMBER: DIGIT+ ;
 ANONYMOUS_VARIABLE : '_' ;
 DOT: '.';
 COMMA: ',';
@@ -100,11 +100,11 @@ query
     ;
 
 statement
-    : comment // added comment (not present in ASPCore2)
-    | CONS body? DOT // integrity constraint
+    : CONS body? DOT // integrity constraint
     | head (CONS body?)? DOT // rule/fact
     | WCONS body? DOT SQUARE_OPEN weightAtLevel SQUARE_CLOSE
     | optimize DOT
+    | comment // added comment (not present in ASPCore2)
     ;
 
 comment

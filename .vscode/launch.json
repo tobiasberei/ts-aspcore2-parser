@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug AspCore2ILFGrammar",
             "input": "src\\__debug__\\hamiltonian.dl",
-            "visualParseTree": true,
+            "visualParseTree": false,
             "grammar": "src\\grammar\\AspCore2ILFGrammar.g4",
             "startRule": "aspCore2ILFGrammar",
             "printParseTree": true,

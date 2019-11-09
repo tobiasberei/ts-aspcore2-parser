@@ -1,0 +1,5 @@
+color(blue). 
+color(green).
+node(1).
+
+:- color(red).
