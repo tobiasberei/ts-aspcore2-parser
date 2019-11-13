@@ -14,9 +14,9 @@
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
-    "generate": "npm run antlr4ts && npm run antlr4ts_annotated",
+    "generate": "npm run antlr4ts",
     "antlr4ts": "antlr4ts -visitor ./src/grammar/AspCore2ILFGrammar.g4 -o ./src/parser",
-    "antlr4ts_annotated": "antlr4ts -visitor ./src/grammar/AnnotatedAspCore2ILFGrammar.g4 -o ./src/parser"
+    "antlr4ts_annotated": "antlr4ts -visitor ./src/grammar/AnnotatedAspCore2ILFGrammar.g4"
   },
   "repository": {
     "type": "git",
