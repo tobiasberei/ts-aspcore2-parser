@@ -16,7 +16,7 @@
     "postversion": "git push && git push --tags",
     "generate": "npm run antlr4ts",
     "antlr4ts": "antlr4ts -visitor ./src/grammar/AspCore2ILFGrammar.g4 -o ./src/parser -Xexact-output-dir",
-    "antlr4ts_annotated": "antlr4ts -visitor ./src/grammar/AnnotatedAspCore2ILFGrammar.g4"
+    "antlr4ts_annotated": "antlr4ts -visitor ./src/grammar/AnnotatedAspCore2ILFGrammar.g4 -o ./src/parser -Xexact-output-dir"
   },
   "repository": {
     "type": "git",
