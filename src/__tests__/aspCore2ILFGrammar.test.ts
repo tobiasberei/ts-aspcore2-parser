@@ -1,4 +1,4 @@
-import { AspCore2ILFParser} from './../AspCore2ILFParser';
+import { AspCore2ILFParser } from './../AspCore2ILFParser';
 import { AspCore2ILFParserDefaultErrorListener } from './../AspCore2ILFParserDefaultErrorListener';
 
 test('AspCore2ILFParser', () => {
@@ -6,15 +6,14 @@ test('AspCore2ILFParser', () => {
   expect(executeInalidAspCode_MissingDot().length).toBe(1);
 });
 
-
 // ####### HELPER FUNCTIONS ##########
 
-export function executeValidAspCode() : string[] {
-const parser = new AspCore2ILFParser();
-const defErrorListener = new AspCore2ILFParserDefaultErrorListener();
-parser.addErrorListener(defErrorListener);
+export function executeValidAspCode(): string[] {
+  const parser = new AspCore2ILFParser();
+  const defErrorListener = new AspCore2ILFParserDefaultErrorListener();
+  parser.addErrorListener(defErrorListener);
 
-const errors = parser.parse(`% Facts
+  const errors = parser.parse(`% Facts
     vtx(1). vtx(2). vtx(3). vtx(4). vtx(5). 
     edge(1, 2). edge(2, 3). edge(3, 4). edge(4, 5). edge(3, 2). edge(1, 3). edge(2, 4). edge(5, 1).
     start(1).
@@ -38,15 +37,15 @@ const errors = parser.parse(`% Facts
     :- vtx(X), #count{Y : inPath(X, Y)} > 1.
     :- vtx(X), #count{Y : inPath(Y, X)} > 1.`);
 
-return defErrorListener.errors;
+  return defErrorListener.errors;
 }
 
-export function executeInalidAspCode_MissingDot() : string[] {
-const parser = new AspCore2ILFParser();
-const defErrorListener = new AspCore2ILFParserDefaultErrorListener();
-parser.addErrorListener(defErrorListener);
+export function executeInalidAspCode_MissingDot(): string[] {
+  const parser = new AspCore2ILFParser();
+  const defErrorListener = new AspCore2ILFParserDefaultErrorListener();
+  parser.addErrorListener(defErrorListener);
 
-const errors = parser.parse(`% Facts
+  const errors = parser.parse(`% Facts
     vtx(1). vtx(2). vtx(3). vtx(4). vtx(5). 
     edge(1, 2). edge(2, 3). edge(3, 4). edge(4, 5). edge(3, 2). edge(1, 3). edge(2, 4). edge(5, 1).
     start(1).
@@ -70,7 +69,5 @@ const errors = parser.parse(`% Facts
     :- vtx(X), #count{Y : inPath(X, Y)} > 1.
     :- vtx(X), #count{Y : inPath(Y, X)} > 1.`);
 
-return defErrorListener.errors;
+  return defErrorListener.errors;
 }
-
-
