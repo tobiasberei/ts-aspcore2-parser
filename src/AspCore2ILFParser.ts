@@ -3,7 +3,7 @@ import { IAspCore2ILFParserError } from './AspCore2ILFParserError';
 import { AspCore2ILFParserConversionErrorListener } from './AspCore2ILFParserErrorConversionListener';
 import { IAspCore2ILFParserErrorListener } from './IAspCore2ILFParserErrorListener';
 import { AspCore2ILFGrammarLexer } from './parser/AspCore2ILFGrammarLexer';
-import { AspCore2ILFGrammarParser } from './parser/AspCore2ILFGrammarParser';
+import { AspCore2ILFGrammarContext, AspCore2ILFGrammarParser } from './parser/AspCore2ILFGrammarParser';
 
 export class AspCore2ILFParser {
   private _aspCore2ErrorConverter: AspCore2ILFParserConversionErrorListener;
@@ -17,7 +17,7 @@ export class AspCore2ILFParser {
     this._aspCore2ErrorConverter = new AspCore2ILFParserConversionErrorListener(this, this._handleError);
   }
 
-  public parse(code: string): void {
+  public parse(code: string): AspCore2ILFGrammarContext {
     const inputStream = new ANTLRInputStream(code);
     const lexer = new AspCore2ILFGrammarLexer(inputStream);
     const tokenStream = new CommonTokenStream(lexer);
@@ -25,7 +25,8 @@ export class AspCore2ILFParser {
 
     parser.removeErrorListeners();
     parser.addErrorListener(this._aspCore2ErrorConverter);
-    const tree = parser.aspCore2ILFGrammar();
+    const parseTreeRoot = parser.aspCore2ILFGrammar();
+    return parseTreeRoot;
   }
 
   public addErrorListener(errorListener: IAspCore2ILFParserErrorListener) {
